@@ -12,17 +12,24 @@
 using namespace cv;
 using namespace std;
 
+Mat localiza_moedas(Mat input, Mat templ){
+
+}
+
 int main(){
 	Mat moeda;
 	Mat moeda_rz;
-	Mat moeda_rz_hsv;
 	
 	moeda = imread("./moeda/moeda4.jpg",CV_LOAD_IMAGE_COLOR); //Lendo imagem
 	
 	resize(moeda, moeda_rz, Size(ALTURA*PROPORCAO,ALTURA),1,1,INTER_LINEAR ); //Mudando tamanho da imagem 
-	
-	cvtColor(moeda_rz, moeda_rz_hsv, CV_BGR2HSV, 0); //Convertendo para CSV
 	imwrite("./moeda/moeda_rz.jpg", moeda_rz); 		 //Salvando imagem
+	
+	Mat moeda_blur;
+	GaussianBlur(moeda_rz, moeda_blur, 3, 1);
+	
+	Mat moeda_blur_hsv;
+	cvtColor(moeda_blur, moeda_blur_hsv, CV_BGR2HSV, 0); //Convertendo para CSV
 
 	Mat moeda_bin(Size(ALTURA*PROPORCAO,ALTURA),CV_8U);
 	
@@ -30,9 +37,9 @@ int main(){
 	int lim_sup = 170;	
 	
 	
-	for(int l = 0; l < moeda_rz_hsv.rows; l++){
-		for(int c = 0; c < moeda_rz_hsv.cols; c++){
-			if(moeda_rz_hsv.at<Vec3b>(l,c)[0]*2 <= lim_sup && moeda_rz_hsv.at<Vec3b>(l,c)[0]*2 >= lim_inf){
+	for(int l = 0; l < moeda_blur_hsv.rows; l++){
+		for(int c = 0; c < moeda_blur_hsv.cols; c++){
+			if(moeda_blur_hsv.at<Vec3b>(l,c)[0]*2 <= lim_sup && moeda_blur_hsv.at<Vec3b>(l,c)[0]*2 >= lim_inf){
 				moeda_bin.at<uchar>(l,c) = 255;
 			} else {
 				moeda_bin.at<uchar>(l,c) = 0;
